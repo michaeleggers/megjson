@@ -1,0 +1,283 @@
+{ "frames": [
+   {
+    "filename": "fatguy 0.ase",
+    "frame": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 1.ase",
+    "frame": { "x": 57, "y": 0, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 2.ase",
+    "frame": { "x": 114, "y": 0, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 3.ase",
+    "frame": { "x": 171, "y": 0, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 4.ase",
+    "frame": { "x": 228, "y": 0, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 5.ase",
+    "frame": { "x": 285, "y": 0, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 6.ase",
+    "frame": { "x": 342, "y": 0, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 7.ase",
+    "frame": { "x": 399, "y": 0, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 8.ase",
+    "frame": { "x": 0, "y": 58, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 9.ase",
+    "frame": { "x": 57, "y": 58, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 10.ase",
+    "frame": { "x": 114, "y": 58, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 11.ase",
+    "frame": { "x": 171, "y": 58, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 12.ase",
+    "frame": { "x": 228, "y": 58, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 13.ase",
+    "frame": { "x": 285, "y": 58, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 14.ase",
+    "frame": { "x": 342, "y": 58, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 15.ase",
+    "frame": { "x": 399, "y": 58, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 16.ase",
+    "frame": { "x": 0, "y": 116, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 17.ase",
+    "frame": { "x": 57, "y": 116, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 18.ase",
+    "frame": { "x": 114, "y": 116, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 19.ase",
+    "frame": { "x": 171, "y": 116, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 20.ase",
+    "frame": { "x": 228, "y": 116, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 21.ase",
+    "frame": { "x": 285, "y": 116, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 22.ase",
+    "frame": { "x": 342, "y": 116, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 23.ase",
+    "frame": { "x": 399, "y": 116, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 24.ase",
+    "frame": { "x": 0, "y": 174, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 25.ase",
+    "frame": { "x": 57, "y": 174, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 26.ase",
+    "frame": { "x": 114, "y": 174, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 27.ase",
+    "frame": { "x": 171, "y": 174, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   },
+   {
+    "filename": "fatguy 28.ase",
+    "frame": { "x": 228, "y": 174, "w": 57, "h": 58 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 57, "h": 58 },
+    "sourceSize": { "w": 57, "h": 58 },
+    "duration": 100
+   }
+ ],
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.1.12-dev",
+  "image": "C:\\repos\\Hope\\assets\\fatguy\\fatguy.png",
+  "format": "RGBA8888",
+  "size": { "w": 512, "h": 256 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "fight_ready", "from": 3, "to": 3, "direction": "forward" },
+   { "name": "punch_low", "from": 5, "to": 5, "direction": "forward" },
+   { "name": "punch_mid", "from": 6, "to": 6, "direction": "forward" },
+   { "name": "punch_high", "from": 7, "to": 7, "direction": "forward" },
+   { "name": "fight_walk", "from": 8, "to": 9, "direction": "forward" },
+   { "name": "hit_high", "from": 10, "to": 10, "direction": "forward" },
+   { "name": "ko", "from": 11, "to": 15, "direction": "forward" },
+   { "name": "dead", "from": 15, "to": 15, "direction": "forward" },
+   { "name": "hit_mid", "from": 21, "to": 21, "direction": "forward" }
+  ]
+ }
+}
