@@ -116,7 +116,8 @@ int json_name(char * out_name, char * buffer)
 int json_number2(char * out_number, char * buffer)
 {
     int length = 0;
-    while ( (*buffer >= '0' && *buffer <= '9') || (*buffer == '.') ) {
+    while ( (*buffer >= '0' && *buffer <= '9') || (*buffer == '.')
+	    || (*buffer == '+') || (*buffer == '-') ) {
         *out_number++ = *buffer++;
         length++;
     }
@@ -254,13 +255,13 @@ JsonToken json_get_token()
         
         default:
         {
-            if ( ((*buf >= '0') && (*buf <= '9')) || (*buf == '.') ) {
+	    // if ( ((*buf >= '0') && (*buf <= '9')) || (*buf == '.') ) {
                 char asciiNumber[32];
                 buf += json_number2(asciiNumber, buf);
                 token.type = JSON_NUMBER;
                 token.f_num = atof(asciiNumber);
                 advance_to_next_non_an(&buf);
-            }
+		// }
         }
     }
     skip_whitespaces_and_linebreaks(&buf);

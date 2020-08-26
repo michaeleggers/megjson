@@ -33,6 +33,12 @@ int main(int argc, char ** argv)
     JsonNode * stuff_array = json_get_value_by_name(doc.tree, "stuff");
     JsonNode * element = json_get_child(stuff_array);
     while (element != NULL) {
+	JsonNode * latitude = json_get_value_by_name(element, "Latitude");
+	JsonNode * longitude = json_get_value_by_name(element, "Longitude");
+	float latitude_f = json_value_float(latitude);
+	float longitude_f = json_value_float(longitude);
+	printf("Latitude: %f, Longitude: %f\n", latitude_f, longitude_f);
+	
 	element = json_get_next_value(element);
     }
 
