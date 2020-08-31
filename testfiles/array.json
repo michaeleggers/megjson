@@ -1,4 +1,4 @@
-{ "stuff": [
+[
   {
      "precision": "zip",
      "Latitude":  +666.666,
@@ -20,4 +20,3 @@
      "Country":   "US"
   }
 ]
-}

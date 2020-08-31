@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 typedef struct JsonToken JsonToken;
 typedef struct JsonNode JsonNode;
@@ -444,6 +445,7 @@ JsonNode * json_object()
     JsonNode * t = new_json_node();
     t->token = g_json_token;
     match(JSON_OBJECT);
+//    g_json_token = json_get_token();
     t->child = json_string_value();
     JsonNode * p = t->child;
     while (g_json_token.type == JSON_COMMA) {
@@ -529,6 +531,7 @@ JsonNode * json_array()
     JsonNode * t = new_json_node();
     t->token = g_json_token;
     match(JSON_ARRAY);
+//    g_json_token = json_get_token();
     t->child = json_value();
     JsonNode * p = t->child;
     while (g_json_token.type == JSON_COMMA) {
@@ -575,7 +578,22 @@ JsonNode * json_false()
 
 JsonNode * json_start()
 {
-    JsonNode * t = json_object();
+    JsonNode * t = 0;
+    switch (*buf) {
+    case '{': {
+	g_json_token = json_get_token();
+	t = json_object();
+    } break;
+
+    case '[': {
+	g_json_token = json_get_token();
+	t = json_array();
+    } break;
+    default: {
+	assert("json document must start with object or array!\n");
+    }
+    }
+
     return t;
 }
 
@@ -605,7 +623,8 @@ JsonDocument json_parse(char * buffer)
     JsonDocument document;
     buf = buffer;
     JsonNode * t = 0;
-    g_json_token = json_get_token();
+//    g_json_token = json_get_token();
+    skip_whitespaces_and_linebreaks(&buf);
     t = json_start();
     //_json_print_ast(t);
     document.tree = t;

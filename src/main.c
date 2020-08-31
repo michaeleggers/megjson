@@ -25,13 +25,12 @@ MyFile read_file(char * filepath) {
 int main(int argc, char ** argv)
 {
 
-    MyFile json_file = read_file("../testfiles/array.json");
+    MyFile json_file = read_file("../testfiles/fatguy.json");
     printf("%s\n", json_file.data);
 
     JsonDocument doc = json_parse(json_file.data);
-    //_json_print_ast(doc.tree);
-    JsonNode * stuff_array = json_get_value_by_name(doc.tree, "stuff");
-    JsonNode * element = json_get_child(stuff_array);
+    _json_print_ast(doc.tree);
+    JsonNode * element = json_get_child(doc.tree);
     while (element != NULL) {
 	JsonNode * latitude = json_get_value_by_name(element, "Latitude");
 	JsonNode * longitude = json_get_value_by_name(element, "Longitude");
