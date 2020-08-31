@@ -34,20 +34,20 @@ struct JsonToken
     {
         char name[256];
         float f_num;
-    };
+    } data;
     
     int lineno;
     int size;
 };
 
-typedef struct JsonNode
+struct JsonNode
 {
     JsonToken token;
     JsonNode * child;
     JsonNode * sibling;
     int count;
     int capacity;
-} JsonNode;
+};
 
 typedef struct JsonDocument
 {
@@ -218,7 +218,7 @@ JsonToken json_get_token()
             buf++; // step over opening ' " '
             token.type = JSON_STRING;
             token.size = 0;
-            buf += json_name(token.name, buf);
+            buf += json_name(token.data.name, buf);
             buf++; // step over closing ' " '
         }
         break;
@@ -261,7 +261,7 @@ JsonToken json_get_token()
                 char asciiNumber[32];
                 buf += json_number2(asciiNumber, buf);
                 token.type = JSON_NUMBER;
-                token.f_num = atof(asciiNumber);
+                token.data.f_num = atof(asciiNumber);
                 advance_to_next_non_an(&buf);
 		// }
         }
@@ -300,13 +300,13 @@ void print_token2(JsonToken * token)
         
         case JSON_STRING:
         {
-            printf("STRING: %s\n", token->name);
+            printf("STRING: %s\n", token->data.name);
         }
         break;
         
         case JSON_NUMBER:
         {
-            printf("NUMBER: %f\n", token->f_num);
+            printf("NUMBER: %f\n", token->data.f_num);
         }
         break;
         
@@ -375,14 +375,14 @@ void print_token(JsonToken * token)
         case JSON_STRING:
         {
             print_indent(indent);
-            printf("STRING: %s\n", token->name);
+            printf("STRING: %s\n", token->data.name);
         }
         break;
         
         case JSON_NUMBER:
         {
             print_indent(indent);
-            printf("NUMBER: %f\n", token->f_num);
+            printf("NUMBER: %f\n", token->data.f_num);
         }
         break;
         
@@ -421,7 +421,7 @@ JsonNode * new_json_node()
     JsonNode * new_node = (JsonNode *)malloc(sizeof(JsonNode));
     new_node->child = 0;
     new_node->sibling = 0;
-    new_node->token = (JsonToken){};
+    new_node->token = (JsonToken){0};
     return new_node;
 }
 
@@ -666,13 +666,13 @@ void _json_print_ast(JsonNode * tree)
 JsonNode * json_get_value_by_name(JsonNode * node, char * name)
 {
     JsonNode * t = 0;
-    if ( !strcmp(node->child->token.name, name) ) {
+    if ( !strcmp(node->child->token.data.name, name) ) {
         t = node->child->child;
     }
     else {
         JsonNode * sibling = node->child->sibling;
         while (sibling) {
-            if ( !strcmp(sibling->token.name, name) ) {
+            if ( !strcmp(sibling->token.data.name, name) ) {
                 t = sibling->child;
                 break;
             }
@@ -695,7 +695,7 @@ JsonNode * json_get_next_value(JsonNode * node)
 float json_value_float(JsonNode * node)
 {
     if (node->token.type == JSON_NUMBER) {
-        return node->token.f_num;
+        return node->token.data.f_num;
     }
     else {
         // TODO(Michael): how to handle this error?
@@ -717,7 +717,7 @@ int json_value_bool(JsonNode * node)
 char * json_value_name(JsonNode * node)
 {
     if (node->token.type == JSON_STRING) {
-        return node->token.name;
+        return node->token.data.name;
     }
     else {
         return 0;

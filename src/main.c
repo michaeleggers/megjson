@@ -25,7 +25,7 @@ MyFile read_file(char * filepath) {
 int main(int argc, char ** argv)
 {
 
-    MyFile json_file = read_file("../testfiles/object.json");
+    MyFile json_file = read_file("../testfiles/fatguy.json");
     printf("%s\n", json_file.data);
 
     JsonDocument doc = json_parse(json_file.data);
@@ -47,7 +47,7 @@ int main(int argc, char ** argv)
     float height = json_value_float(height_node);
     char * app_name = json_value_name(app_node);
     printf("app name: %s, width: %f, height: %f\n", app_name, width, height);
-    
+  
 
 
 

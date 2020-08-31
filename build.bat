@@ -3,8 +3,8 @@
 
 
 
-set flags_debug=   -std=c11 -Wall -Wextra -pedantic-errors -fextended-identifiers -g -D DEBUG
-set flags_release=   -std=c11 -Wall -Wextra -pedantic-errors -fextended-identifiers
+set flags_debug=   -std=c99 -Wall -Wextra -pedantic-errors -fextended-identifiers -g -D DEBUG
+set flags_release=   -std=c99 -Wall -Wextra -pedantic-errors -fextended-identifiers
 
 set clang_flags_debug= /Z7 /DDEBUG /W4 /WX /MDd -Qunused-arguments
 set clang_flags_debug_easy= /Z7 /DDEBUG /W4 /MDd -Qunused-arguments -Wno-unused-variable
