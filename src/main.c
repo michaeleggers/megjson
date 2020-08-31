@@ -25,21 +25,29 @@ MyFile read_file(char * filepath) {
 int main(int argc, char ** argv)
 {
 
-    MyFile json_file = read_file("../testfiles/fatguy.json");
+    MyFile json_file = read_file("../testfiles/fatguy_with_empty_object.json");
     printf("%s\n", json_file.data);
 
     JsonDocument doc = json_parse(json_file.data);
     _json_print_ast(doc.tree);
-    JsonNode * element = json_get_child(doc.tree);
-    while (element != NULL) {
-	JsonNode * latitude = json_get_value_by_name(element, "Latitude");
-	JsonNode * longitude = json_get_value_by_name(element, "Longitude");
-	float latitude_f = json_value_float(latitude);
-	float longitude_f = json_value_float(longitude);
-	printf("Latitude: %f, Longitude: %f\n", latitude_f, longitude_f);
-	
-	element = json_get_next_value(element);
+    JsonNode * frames = json_get_value_by_name(doc.tree, "frames");
+    JsonNode * meta = json_get_value_by_name(doc.tree, "meta");
+    JsonNode * frame = json_get_child(frames);
+    while (frame != NULL) {
+	JsonNode * filename_node = json_get_value_by_name(frame, "filename");
+	char * filename = json_value_name(filename_node);	
+	printf("filename: %s\n", filename);
+	frame = json_get_next_value(frame);
     }
+    JsonNode * app_node = json_get_value_by_name(meta, "app");
+    JsonNode * size_node = json_get_value_by_name(meta, "size");
+    JsonNode * width_node = json_get_value_by_name(size_node, "w");
+    JsonNode * height_node = json_get_value_by_name(size_node, "h");
+    float width = json_value_float(width_node);
+    float height = json_value_float(height_node);
+    char * app_name = json_value_name(app_node);
+    printf("app name: %s, width: %f, height: %f\n", app_name, width, height);
+    
 
 
 

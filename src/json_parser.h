@@ -67,6 +67,7 @@ JsonNode * json_number();
 int json_number2(char * out_number, char * buffer);
 JsonNode * json_true();
 JsonNode * json_false();
+JsonNode * json_null();
 void json_print_ast(JsonNode * root);
 void _json_print_ast(JsonNode * node);
 
@@ -446,7 +447,14 @@ JsonNode * json_object()
     t->token = g_json_token;
     match(JSON_OBJECT);
 //    g_json_token = json_get_token();
-    t->child = json_string_value();
+    /* After object starts, next value-type must be either JSON_STRING or JSON_NULL */
+    if (g_json_token.type == JSON_STRING) {
+	t->child = json_string_value();
+    }
+    else { // g_json_object.type == JSON_OBJECT_CLOSE !
+	// t->child = json_null(); /* TODO: should this be undefined or get the json-value 'null'? */
+	t->child = 0;	
+    }
     JsonNode * p = t->child;
     while (g_json_token.type == JSON_COMMA) {
         match(JSON_COMMA);
@@ -511,7 +519,7 @@ JsonNode * json_value()
         
         case JSON_NULL:
         {
-            // TODO(Michael): implement
+	    t = json_null();
         }
         break;
         
@@ -573,6 +581,14 @@ JsonNode * json_false()
     JsonNode * t = new_json_node();
     t->token = g_json_token;
     match(JSON_FALSE);
+    return t;
+}
+
+JsonNode * json_null()
+{
+    JsonNode * t = new_json_node();
+    t->token = g_json_token;
+    match(JSON_NULL);
     return t;
 }
 
