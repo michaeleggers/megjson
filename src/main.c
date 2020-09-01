@@ -25,7 +25,7 @@ MyFile read_file(char * filepath) {
 int main(int argc, char ** argv)
 {
 
-    MyFile json_file = read_file("../testfiles/null.json");
+    MyFile json_file = read_file("../testfiles/object.json");
     printf("%s\n", json_file.data);
 
     JsonDocument doc = json_parse(json_file.data);

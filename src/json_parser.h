@@ -24,6 +24,7 @@ typedef enum JsonType
     JSON_COLON,
     JSON_COMMA,
 
+    JSON_EOF,
     JSON_UNKNOWN_VALUE
 } JsonType;
 
@@ -130,7 +131,8 @@ int json_number2(char * out_number, char * buffer)
 
 int is_number(char * buffer)
 {
-    if (*buffer >= '0' && *buffer <= '9') return 1;
+    if ( (*buffer >= '0' && *buffer <= '9')
+        || (*buffer == '+') || (*buffer == '-') ) return 1;
     else return 0;
 }
 
@@ -285,7 +287,13 @@ JsonToken json_get_token()
 	    token.size = 0;
 	    advance_to_next_whitespace(&buf);
 	} break;
-        
+
+	case '\0':
+	{
+	    token.type = JSON_EOF;
+	    token.size = 0;
+	} break;
+	
 	default:	   
 	{
 	    token.type = JSON_UNKNOWN_VALUE;
@@ -355,6 +363,11 @@ void print_token2(JsonToken * token)
     case JSON_COLON:
     {
 	printf(":\n");
+    } break;
+
+    case JSON_EOF:
+    {
+	printf("EOF\n");
     } break;
 
     case JSON_UNKNOWN_VALUE:
@@ -436,6 +449,11 @@ void print_token(JsonToken * token)
     {
 	print_indent(indent);
 	printf(":\n");
+    } break;
+
+    case JSON_EOF:
+    {
+	printf("EOF\n");
     } break;
 
     case JSON_UNKNOWN_VALUE:
