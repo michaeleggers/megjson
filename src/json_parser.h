@@ -11,7 +11,6 @@ typedef struct JsonNode JsonNode;
 
 typedef enum JsonType
 {
-    JSON_NONE,
     JSON_OBJECT,
     JSON_ARRAY,
     JSON_NUMBER,
@@ -181,90 +180,88 @@ JsonToken json_get_token()
     JsonToken token;
     switch (*buf)
     {
-        case '{':
-        {
-            token.type = JSON_OBJECT;
-            token.size = 0;
-            buf++;
-        }
-        break;
+    case '{':
+    {
+	token.type = JSON_OBJECT;
+	token.size = 0;
+	buf++;
+    } break;
         
-        case '}':
-        {
-            token.type = JSON_OBJECT_CLOSE;
-            token.size = 0;
-            buf++;
-        }
-        break;
+    case '}':
+    {
+	token.type = JSON_OBJECT_CLOSE;
+	token.size = 0;
+	buf++;
+    } break;
         
-        case '[':
-        {
-            token.type = JSON_ARRAY;
-            token.size = 0;
-            buf++;
-        }
-        break;
+    case '[':
+    {
+	token.type = JSON_ARRAY;
+	token.size = 0;
+	buf++;
+    } break;
         
-        case ']':
-        {
-            token.type = JSON_ARRAY_CLOSE;
-            token.size = 0;
-            buf++;
-        }
-        break;
+    case ']':
+    {
+	token.type = JSON_ARRAY_CLOSE;
+	token.size = 0;
+	buf++;
+    } break;
         
-        case '"':
-        {
-            buf++; // step over opening ' " '
-            token.type = JSON_STRING;
-            token.size = 0;
-            buf += json_name(token.data.name, buf);
-            buf++; // step over closing ' " '
-        }
-        break;
+    case '"':
+    {
+	buf++; // step over opening ' " '
+	token.type = JSON_STRING;
+	token.size = 0;
+	buf += json_name(token.data.name, buf);
+	buf++; // step over closing ' " '
+    } break;
         
-        case 'f':
-        {
-            token.type = JSON_FALSE;
-            token.size = 0;
-            advance_to_next_non_an(&buf);
-        }
-        break;
+    case 'f':
+    {
+	token.type = JSON_FALSE;
+	token.size = 0;
+	advance_to_next_non_an(&buf);
+    } break;
         
-        case 't':
-        {
-            token.type = JSON_TRUE;
-            token.size = 0;
-            advance_to_next_non_an(&buf);
-        }
-        break;
+    case 't':
+    {
+	token.type = JSON_TRUE;
+	token.size = 0;
+	advance_to_next_non_an(&buf);
+    } break;
+
+    case 'n':
+    {
+	token.type = JSON_NULL;
+	token.size = 0;
+	advance_to_next_non_an(&buf);
+    } break;
         
-        case ',':
-        {
-            token.type = JSON_COMMA;
-            token.size = 0;
-            advance_to_next_whitespace(&buf);
-        }
-        break;
+    case ',':
+    {
+	token.type = JSON_COMMA;
+	token.size = 0;
+	advance_to_next_whitespace(&buf);
+    } break;
         
-        case ':':
-        {
-            token.type = JSON_COLON;
-            token.size = 0;
-            advance_to_next_whitespace(&buf);
-        }
-        break;
+    case ':':
+    {
+	token.type = JSON_COLON;
+	token.size = 0;
+	advance_to_next_whitespace(&buf);
+    } break;
         
-        default:
-        {
-	    // if ( ((*buf >= '0') && (*buf <= '9')) || (*buf == '.') ) {
-                char asciiNumber[32];
-                buf += json_number2(asciiNumber, buf);
-                token.type = JSON_NUMBER;
-                token.data.f_num = atof(asciiNumber);
-                advance_to_next_non_an(&buf);
-		// }
-        }
+    default:
+    {
+	// if ( ((*buf >= '0') && (*buf <= '9')) || (*buf == '.') ) {
+	char asciiNumber[32];
+	buf += json_number2(asciiNumber, buf);
+	token.type = JSON_NUMBER;
+	token.data.f_num = atof(asciiNumber);
+	advance_to_next_non_an(&buf);
+	// }
+    }
     }
     skip_whitespaces_and_linebreaks(&buf);
     return token;
@@ -274,65 +271,60 @@ void print_token2(JsonToken * token)
 {
     switch (token->type)
     {
-        case JSON_OBJECT:
-        {
-            printf("OBJECT\n");
-        }
-        break;
+    case JSON_OBJECT:
+    {
+	printf("OBJECT\n");
+    } break;
         
-        case JSON_OBJECT_CLOSE:
-        {
-            printf("OBJECT-CLOSE\n");
-        }
-        break;
+    case JSON_OBJECT_CLOSE:
+    {
+	printf("OBJECT-CLOSE\n");
+    } break;
         
-        case JSON_ARRAY:
-        {
-            printf("ARRAY\n");
-        }
-        break;
+    case JSON_ARRAY:
+    {
+	printf("ARRAY\n");
+    } break;
         
-        case JSON_ARRAY_CLOSE:
-        {
-            printf("ARRAY-CLOSE\n");
-        }
-        break;
+    case JSON_ARRAY_CLOSE:
+    {
+	printf("ARRAY-CLOSE\n");
+    } break;
         
-        case JSON_STRING:
-        {
-            printf("STRING: %s\n", token->data.name);
-        }
-        break;
+    case JSON_STRING:
+    {
+	printf("STRING: %s\n", token->data.name);
+    } break;
         
-        case JSON_NUMBER:
-        {
-            printf("NUMBER: %f\n", token->data.f_num);
-        }
-        break;
+    case JSON_NUMBER:
+    {
+	printf("NUMBER: %f\n", token->data.f_num);
+    } break;
         
-        case JSON_TRUE:
-        {
-            printf("TRUE\n");
-        }
-        break;
+    case JSON_TRUE:
+    {
+	printf("TRUE\n");
+    } break;
         
-        case JSON_FALSE:
-        {
-            printf("FALSE\n");
-        }
-        break;
+    case JSON_FALSE:
+    {
+	printf("FALSE\n");
+    } break;
+
+    case JSON_NULL:
+    {
+	printf("NULL\n");	      
+    } break;
         
-        case JSON_COMMA:
-        {
-            printf(",\n");
-        }
-        break;
+    case JSON_COMMA:
+    {
+	printf(",\n");
+    } break;
         
-        case JSON_COLON:
-        {
-            printf(":\n");
-        }
-        break;
+    case JSON_COLON:
+    {
+	printf(":\n");
+    } break;
     }
 }
 
@@ -340,79 +332,75 @@ void print_token(JsonToken * token)
 {
     switch (token->type)
     {
-        case JSON_OBJECT:
-        {
-            print_indent(indent);
-            printf("OBJECT\n");
-            indent += 2;
-        }
-        break;
+    case JSON_OBJECT:
+    {
+	print_indent(indent);
+	printf("OBJECT\n");
+	indent += 2;
+    } break;
         
-        case JSON_OBJECT_CLOSE:
-        {
-            indent -= 2;
-            print_indent(indent);
-            printf("OBJECT-CLOSE\n");
-        }
-        break;
+    case JSON_OBJECT_CLOSE:
+    {
+	indent -= 2;
+	print_indent(indent);
+	printf("OBJECT-CLOSE\n");
+    } break;
         
-        case JSON_ARRAY:
-        {
-            print_indent(indent);
-            printf("ARRAY\n");
-            indent += 2;
-        }
-        break;
+    case JSON_ARRAY:
+    {
+	print_indent(indent);
+	printf("ARRAY\n");
+	indent += 2;
+    } break;
         
-        case JSON_ARRAY_CLOSE:
-        {
-            indent -= 2;
-            print_indent(indent);
-            printf("ARRAY-CLOSE\n");
-        }
-        break;
+    case JSON_ARRAY_CLOSE:
+    {
+	indent -= 2;
+	print_indent(indent);
+	printf("ARRAY-CLOSE\n");
+    } break;
         
-        case JSON_STRING:
-        {
-            print_indent(indent);
-            printf("STRING: %s\n", token->data.name);
-        }
-        break;
+    case JSON_STRING:
+    {
+	print_indent(indent);
+	printf("STRING: %s\n", token->data.name);
+    } break;
         
-        case JSON_NUMBER:
-        {
-            print_indent(indent);
-            printf("NUMBER: %f\n", token->data.f_num);
-        }
-        break;
+    case JSON_NUMBER:
+    {
+	print_indent(indent);
+	printf("NUMBER: %f\n", token->data.f_num);
+    } break;
         
-        case JSON_TRUE:
-        {
-            print_indent(indent);
-            printf("TRUE\n");
-        }
-        break;
+    case JSON_TRUE:
+    {
+	print_indent(indent);
+	printf("TRUE\n");
+    } break;
         
-        case JSON_FALSE:
-        {
-            print_indent(indent);
-            printf("FALSE\n");
-        }
-        break;
+    case JSON_FALSE:
+    {
+	print_indent(indent);
+	printf("FALSE\n");
+    } break;
+
+    case JSON_NULL:
+    {
+	print_indent(indent);
+	printf("NULL\n");
+    } break;
         
-        case JSON_COMMA:
-        {
-            print_indent(indent);
-            printf(",\n");
-        }
-        break;
+    case JSON_COMMA:
+    {
+	print_indent(indent);
+	printf(",\n");
+    } break;
         
-        case JSON_COLON:
-        {
-            print_indent(indent);
-            printf(":\n");
-        }
-        break;
+    case JSON_COLON:
+    {
+	print_indent(indent);
+	printf(":\n");
+    } break;
     }
 }
 
