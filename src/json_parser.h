@@ -22,7 +22,9 @@ typedef enum JsonType
     JSON_OBJECT_CLOSE,
     JSON_ARRAY_CLOSE,
     JSON_COLON,
-    JSON_COMMA
+    JSON_COMMA,
+
+    JSON_UNKNOWN_VALUE
 } JsonType;
 
 struct JsonToken
@@ -126,6 +128,12 @@ int json_number2(char * out_number, char * buffer)
     return length;
 }
 
+int is_number(char * buffer)
+{
+    if (*buffer >= '0' && *buffer <= '9') return 1;
+    else return 0;
+}
+
 int skip_whitespaces_and_linebreaks(char ** buffer)
 {
     int skipped = 0;
@@ -193,93 +201,98 @@ JsonToken json_get_token()
 {
     skip_whitespaces_and_linebreaks(&buf);
     JsonToken token;
-    switch (*buf)
-    {
-    case '{':
-    {
-	token.type = JSON_OBJECT;
-	token.size = 0;
-	buf++;
-    } break;
-        
-    case '}':
-    {
-	token.type = JSON_OBJECT_CLOSE;
-	token.size = 0;
-	buf++;
-    } break;
-        
-    case '[':
-    {
-	token.type = JSON_ARRAY;
-	token.size = 0;
-	buf++;
-    } break;
-        
-    case ']':
-    {
-	token.type = JSON_ARRAY_CLOSE;
-	token.size = 0;
-	buf++;
-    } break;
-        
-    case '"':
-    {
-	buf++; // step over opening ' " '
-	token.type = JSON_STRING;
-	token.size = 0;
-	buf += json_name(token.data.name, buf);
-	buf++; // step over closing ' " '
-    } break;
-        
-    case 'f':
-    {
-	check_value_string(buf, "false", 5);
-	token.type = JSON_FALSE;
-	token.size = 0;
-	advance_to_next_non_an(&buf);
-    } break;
-        
-    case 't':
-    {
-	check_value_string(buf, "true", 4);
-	token.type = JSON_TRUE;
-	token.size = 0;
-	advance_to_next_non_an(&buf);
-    } break;
-
-    case 'n':
-    {
-	check_value_string(buf, "null", 4);
-	token.type = JSON_NULL;
-	token.size = 0;
-	advance_to_next_non_an(&buf);
-    } break;
-        
-    case ',':
-    {
-	token.type = JSON_COMMA;
-	token.size = 0;
-	advance_to_next_whitespace(&buf);
-    } break;
-        
-    case ':':
-    {
-	token.type = JSON_COLON;
-	token.size = 0;
-	advance_to_next_whitespace(&buf);
-    } break;
-        
-    default:
-    {
-	// if ( ((*buf >= '0') && (*buf <= '9')) || (*buf == '.') ) {
+    if ( is_number(buf) ) {
 	char asciiNumber[32];
 	buf += json_number2(asciiNumber, buf);
 	token.type = JSON_NUMBER;
 	token.data.f_num = atof(asciiNumber);
 	advance_to_next_non_an(&buf);
-	// }
     }
+    else {
+	switch (*buf)
+	{
+	case '{':
+	{
+	    token.type = JSON_OBJECT;
+	    token.size = 0;
+	    buf++;
+	} break;
+        
+	case '}':
+	{
+	    token.type = JSON_OBJECT_CLOSE;
+	    token.size = 0;
+	    buf++;
+	} break;
+        
+	case '[':
+	{
+	    token.type = JSON_ARRAY;
+	    token.size = 0;
+	    buf++;
+	} break;
+        
+	case ']':
+	{
+	    token.type = JSON_ARRAY_CLOSE;
+	    token.size = 0;
+	    buf++;
+	} break;
+        
+	case '"':
+	{
+	    buf++; // step over opening ' " '
+	    token.type = JSON_STRING;
+	    token.size = 0;
+	    buf += json_name(token.data.name, buf);
+	    buf++; // step over closing ' " '
+	} break;
+        
+	case 'f':
+	{
+	    check_value_string(buf, "false", 5);
+	    token.type = JSON_FALSE;
+	    token.size = 0;
+	    advance_to_next_non_an(&buf);
+	} break;
+        
+	case 't':
+	{
+	    check_value_string(buf, "true", 4);
+	    token.type = JSON_TRUE;
+	    token.size = 0;
+	    advance_to_next_non_an(&buf);
+	} break;
+
+	case 'n':
+	{
+	    check_value_string(buf, "null", 4);
+	    token.type = JSON_NULL;
+	    token.size = 0;
+	    advance_to_next_non_an(&buf);
+	} break;
+        
+	case ',':
+	{
+	    token.type = JSON_COMMA;
+	    token.size = 0;
+	    advance_to_next_whitespace(&buf);
+	} break;
+        
+	case ':':
+	{
+	    token.type = JSON_COLON;
+	    token.size = 0;
+	    advance_to_next_whitespace(&buf);
+	} break;
+        
+	default:	   
+	{
+	    token.type = JSON_UNKNOWN_VALUE;
+	    token.size = 0;
+	    unknown_value("Hello, this value is unknown to me!");
+	}
+	}
     }
     skip_whitespaces_and_linebreaks(&buf);
     return token;
@@ -342,6 +355,11 @@ void print_token2(JsonToken * token)
     case JSON_COLON:
     {
 	printf(":\n");
+    } break;
+
+    case JSON_UNKNOWN_VALUE:
+    {
+	printf("UNKNOWN VALUE!\n");
     } break;
     }
 }
@@ -418,6 +436,12 @@ void print_token(JsonToken * token)
     {
 	print_indent(indent);
 	printf(":\n");
+    } break;
+
+    case JSON_UNKNOWN_VALUE:
+    {
+	print_indent(indent);
+	printf("UNKNOWN VALUE!\n");
     } break;
     }
 }
