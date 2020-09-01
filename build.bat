@@ -14,7 +14,7 @@ pushd "%~dp0"
 mkdir build
 pushd build
 
-REM gcc %flags_debug%   ..\src\main.c -o main_gcc_dbg
+gcc %flags_debug%   ..\src\main.c -o main_gcc_dbg
 REM gcc %flags_release% ..\src\main.c -o main_gcc_release
 
 REM clang-cl %clang_flags_debug%  ..\src\main.c -o main_clang_dbg

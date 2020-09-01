@@ -69,7 +69,7 @@ JsonNode * json_false();
 JsonNode * json_null();
 void json_print_ast(JsonNode * root);
 void _json_print_ast(JsonNode * node);
-
+static void unknown_value(char * message);
 
 
 
@@ -170,6 +170,21 @@ int advance_to_next_non_an(char ** buffer)
     return skipped;
 }
 
+void check_value_string(char * buffer, char * valuestring, int valuestring_length)
+{
+    assert(valuestring_length <= 16);
+    char tmp[16];
+    memcpy( (void*)tmp, (void*)buffer, valuestring_length * sizeof(char) );
+    tmp[valuestring_length] = '\0';
+    
+    if ( !strcmp(tmp, valuestring) ) {
+	/* all good! */
+    }
+    else {
+	unknown_value(tmp);
+    }
+}
+
 static char * buf;
 static int indent;
 static JsonToken g_json_token;
@@ -219,6 +234,7 @@ JsonToken json_get_token()
         
     case 'f':
     {
+	check_value_string(buf, "false", 5);
 	token.type = JSON_FALSE;
 	token.size = 0;
 	advance_to_next_non_an(&buf);
@@ -226,6 +242,7 @@ JsonToken json_get_token()
         
     case 't':
     {
+	check_value_string(buf, "true", 4);
 	token.type = JSON_TRUE;
 	token.size = 0;
 	advance_to_next_non_an(&buf);
@@ -233,6 +250,7 @@ JsonToken json_get_token()
 
     case 'n':
     {
+	check_value_string(buf, "null", 4);
 	token.type = JSON_NULL;
 	token.size = 0;
 	advance_to_next_non_an(&buf);
@@ -411,6 +429,11 @@ JsonNode * new_json_node()
     new_node->sibling = 0;
     new_node->token = (JsonToken){0};
     return new_node;
+}
+
+static void unknown_value(char * message)
+{
+    fprintf(stderr, "\n>>> Unknown JSON-value at line %d: %s\n", g_lineno, message);
 }
 
 static void syntax_error(char * message)
