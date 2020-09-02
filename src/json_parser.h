@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <stdint.h>
 
-#define MEGJ_MEMORY_SIZE 1 * 1024 * 1024
+#define MEGJ_MEMORY_SIZE 50 * 1024 * 1024
 
 typedef struct JsonToken JsonToken;
 typedef struct JsonNode JsonNode;
@@ -43,7 +43,7 @@ struct JsonToken
     
     union
     {
-        char name[256];
+        char name[512]; /* TODO: Is there a max. how long string can be in the json-spec? */
         float f_num;
     } data;
     
