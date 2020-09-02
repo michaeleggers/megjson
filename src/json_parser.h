@@ -82,7 +82,7 @@ JsonNode * json_null();
 void json_print_ast(JsonNode * root);
 void _json_print_ast(JsonNode * node);
 static void unknown_value(char * message);
-
+void json_cleanup();
 
 
 
@@ -498,6 +498,12 @@ void * json_malloc(uint32_t size)
     void * addr = (void*)(g_json_memory.data + g_json_memory.used);
     g_json_memory.used += size;
     return addr;
+}
+
+void json_cleanup()
+{
+    free((void*)g_json_memory.data);
+    g_json_memory.used = 0;    
 }
 
 JsonNode * new_json_node()

@@ -51,7 +51,7 @@ int main(int argc, char ** argv)
 
 #endif
 
+    json_cleanup();
 
-    
     return 0;
 }
