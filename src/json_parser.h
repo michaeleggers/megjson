@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <stdint.h>
 
-#define MEGJ_MEMORY_SIZE 50 * 1024 * 1024
+#define MEGJ_MEMORY_SIZE 500 * 1024 * 1024
 
 typedef struct JsonToken JsonToken;
 typedef struct JsonNode JsonNode;
@@ -43,7 +43,8 @@ struct JsonToken
     
     union
     {
-        char name[512]; /* TODO: Is there a max. how long string can be in the json-spec? */
+//        char name[512]; /* TODO: Is there a max. length of how long a string can be in the json-spec? */
+	char * name;
         float f_num;
     } data;
     
@@ -83,7 +84,7 @@ void json_print_ast(JsonNode * root);
 void _json_print_ast(JsonNode * node);
 static void unknown_value(char * message);
 void json_cleanup();
-
+void * json_malloc(uint32_t size);
 
 
 
@@ -115,14 +116,17 @@ int skipLine(char * buffer)
     return skipped;
 }
 
-int json_name(char * out_name, char * buffer)
+int json_name(char ** out_name, char * buffer)
 {
+    char * buffer_start = buffer;
     int length = 0;
     while (*buffer != '"') {
-        *out_name++ = *buffer++;
+        buffer++;
         length++;
     }
-    *out_name = '\0';
+    *out_name = (char*)json_malloc( (length+1) * sizeof(char) );
+    memcpy( (void*)*out_name, (void*)buffer_start, length );
+    (*out_name)[length] = '\0';
     return length;
 }
 
@@ -196,7 +200,7 @@ int check_value_string(char ** buffer, char * valuestring, int valuestring_lengt
     int advanced = advance_to_next_non_an(buffer);
     char tmp[64+1];
     memcpy( (void*)tmp, (void*)buffer_before, advanced * sizeof(char) );
-    tmp[64] = '\0';
+    tmp[advanced] = '\0';
     
     if ( !strcmp(tmp, valuestring) ) {
 	return 1;
@@ -259,7 +263,7 @@ JsonToken json_get_token()
 	    buf++; // step over opening ' " '
 	    token.type = JSON_STRING;
 	    token.size = 0;
-	    buf += json_name(token.data.name, buf);
+	    buf += json_name( &(token.data.name), buf );
 	    buf++; // step over closing ' " '
 	} break;
         
