@@ -180,18 +180,21 @@ int advance_to_next_non_an(char ** buffer)
     return skipped;
 }
 
-void check_value_string(char * buffer, char * valuestring, int valuestring_length)
+int check_value_string(char ** buffer, char * valuestring, int valuestring_length)
 {
-    assert(valuestring_length <= 16);
-    char tmp[16];
-    memcpy( (void*)tmp, (void*)buffer, valuestring_length * sizeof(char) );
-    tmp[valuestring_length] = '\0';
+    assert(valuestring_length <= 64); /* TODO: max length of a value-string is 5 ('false'). */
+    char * buffer_before = *buffer;
+    int advanced = advance_to_next_non_an(buffer);
+    char tmp[64+1];
+    memcpy( (void*)tmp, (void*)buffer_before, advanced * sizeof(char) );
+    tmp[64] = '\0';
     
     if ( !strcmp(tmp, valuestring) ) {
-	/* all good! */
+	return 1;
     }
     else {
 	unknown_value(tmp);
+	return 0;
     }
 }
 
@@ -252,25 +255,40 @@ JsonToken json_get_token()
         
 	case 'f':
 	{
-	    check_value_string(buf, "false", 5);
-	    token.type = JSON_FALSE;
-	    token.size = 0;
+	    if (check_value_string(&buf, "false", 5)) {		
+		token.type = JSON_FALSE;
+		token.size = 0;
+	    }
+	    else {
+		token.type = JSON_UNKNOWN_VALUE;
+		token.size = 0;
+	    }
 	    advance_to_next_non_an(&buf);
 	} break;
         
 	case 't':
 	{
-	    check_value_string(buf, "true", 4);
-	    token.type = JSON_TRUE;
-	    token.size = 0;
+	    if (check_value_string(&buf, "true", 4)) {
+		token.type = JSON_TRUE;
+		token.size = 0;
+	    }
+	    else {
+		token.type = JSON_UNKNOWN_VALUE;
+		token.size = 0;
+	    }
 	    advance_to_next_non_an(&buf);
 	} break;
 
 	case 'n':
 	{
-	    check_value_string(buf, "null", 4);
-	    token.type = JSON_NULL;
-	    token.size = 0;
+	    if (check_value_string(&buf, "null", 4)) {
+		token.type = JSON_NULL;
+		token.size = 0;
+	    }
+	    else {
+		token.type = JSON_UNKNOWN_VALUE;
+		token.size = 0;
+	    }
 	    advance_to_next_non_an(&buf);
 	} break;
         
@@ -298,7 +316,7 @@ JsonToken json_get_token()
 	{
 	    token.type = JSON_UNKNOWN_VALUE;
 	    token.size = 0;
-	    unknown_value("Hello, this value is unknown to me!");
+	    check_value_string(&buf, "", 1);
 	}
 	}
     }
@@ -491,6 +509,7 @@ static void match(JsonType expected_token_type)
     else {
         syntax_error("unexpected token -> ");
         print_token(&g_json_token);
+	abort();
     }
 }
 
@@ -580,7 +599,8 @@ JsonNode * json_value()
         {
             syntax_error("unexpected token -> ");
             print_token(&g_json_token);
-            g_json_token = json_get_token();
+//            g_json_token = json_get_token();
+	    abort();
         }
         break;
     }
