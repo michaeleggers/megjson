@@ -25,12 +25,12 @@ MyFile read_file(char * filepath) {
 int main(int argc, char ** argv)
 {
 
-    MyFile json_file = read_file("../testfiles/array_with_empty_object.json");
+    MyFile json_file = read_file("../testfiles/fatguy.json");
     printf("%s\n", json_file.data);
 
     JsonDocument doc = json_parse(json_file.data);
     _json_print_ast(doc.tree);
-#if 0
+#if 1
     JsonNode * frames = json_get_value_by_name(doc.tree, "frames");
     JsonNode * meta = json_get_value_by_name(doc.tree, "meta");
     JsonNode * frame = json_get_child(frames);
@@ -48,7 +48,7 @@ int main(int argc, char ** argv)
     float height = json_value_float(height_node);
     char * app_name = json_value_name(app_node);
     printf("app name: %s, width: %f, height: %f\n", app_name, width, height);
-  
+
 #endif
 
 

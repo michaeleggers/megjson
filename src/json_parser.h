@@ -4,10 +4,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <stdint.h>
+
+#define MEGJ_MEMORY_SIZE 1 * 1024 * 1024
 
 typedef struct JsonToken JsonToken;
 typedef struct JsonNode JsonNode;
 
+typedef struct JsonMemory
+{
+    uint32_t size;
+    uint32_t used;
+    uint8_t * data;
+} JsonMemory;
 
 typedef enum JsonType
 {
@@ -201,6 +210,7 @@ int check_value_string(char ** buffer, char * valuestring, int valuestring_lengt
 static char * buf;
 static int indent;
 static JsonToken g_json_token;
+static JsonMemory g_json_memory;
 
 JsonToken json_get_token()
 {
@@ -482,9 +492,17 @@ void print_token(JsonToken * token)
     }
 }
 
+void * json_malloc(uint32_t size)
+{
+    assert( ((g_json_memory.used + size) <= g_json_memory.size) && "Out of memory!" );
+    void * addr = (void*)(g_json_memory.data + g_json_memory.used);
+    g_json_memory.used += size;
+    return addr;
+}
+
 JsonNode * new_json_node()
 {
-    JsonNode * new_node = (JsonNode *)malloc(sizeof(JsonNode));
+    JsonNode * new_node = (JsonNode *)json_malloc(sizeof(JsonNode));
     new_node->child = 0;
     new_node->sibling = 0;
     new_node->token = (JsonToken){0};
@@ -708,6 +726,14 @@ JsonDocument json_parse(char * buffer)
         print_token(&g_json_token);
     }
 #endif
+
+    /* Initialize Memory */
+    {
+	g_json_memory.data = (uint8_t*)malloc(MEGJ_MEMORY_SIZE);
+	memset((uint8_t*)g_json_memory.data, 0, MEGJ_MEMORY_SIZE);
+	g_json_memory.size = MEGJ_MEMORY_SIZE;
+	g_json_memory.used = 0;
+    }
     
     JsonDocument document;
     buf = buffer;
