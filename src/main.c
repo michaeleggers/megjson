@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#define JSON_PARSER_IMPLEMENTATION
+#define MEGJ_PARSER_IMPLEMENTATION
 #include "json_parser.h"
 
 typedef struct MyFile {
@@ -25,33 +25,33 @@ MyFile read_file(char * filepath) {
 int main(int argc, char ** argv)
 {
 
-    MyFile json_file = read_file("../testfiles/citylots.json");
-//    printf("%s\n", json_file.data);
+    MyFile megj_file = read_file("../testfiles/fatguy.json");
+    printf("%s\n", megj_file.data);
 
-    JsonDocument doc = json_parse(json_file.data);
-//    _json_print_ast(doc.tree);
-#if 0
-    JsonNode * frames = json_get_value_by_name(doc.tree, "frames");
-    JsonNode * meta = json_get_value_by_name(doc.tree, "meta");
-    JsonNode * frame = json_get_child(frames);
+    MegjDocument doc = megj_parse(megj_file.data);
+    _megj_print_ast(doc.tree);
+#if 1
+    MegjNode * frames = megj_get_value_by_name(doc.tree, "frames");
+    MegjNode * meta = megj_get_value_by_name(doc.tree, "meta");
+    MegjNode * frame = megj_get_child(frames);
     while (frame != NULL) {
-	JsonNode * filename_node = json_get_value_by_name(frame, "filename");
-	char * filename = json_value_name(filename_node);	
+	MegjNode * filename_node = megj_get_value_by_name(frame, "filename");
+	char * filename = megj_value_name(filename_node);	
 	printf("filename: %s\n", filename);
-	frame = json_get_next_value(frame);
+	frame = megj_get_next_value(frame);
     }
-    JsonNode * app_node = json_get_value_by_name(meta, "app");
-    JsonNode * size_node = json_get_value_by_name(meta, "size");
-    JsonNode * width_node = json_get_value_by_name(size_node, "w");
-    JsonNode * height_node = json_get_value_by_name(size_node, "h");
-    float width = json_value_float(width_node);
-    float height = json_value_float(height_node);
-    char * app_name = json_value_name(app_node);
+    MegjNode * app_node = megj_get_value_by_name(meta, "app");
+    MegjNode * size_node = megj_get_value_by_name(meta, "size");
+    MegjNode * width_node = megj_get_value_by_name(size_node, "w");
+    MegjNode * height_node = megj_get_value_by_name(size_node, "h");
+    float width = megj_value_float(width_node);
+    float height = megj_value_float(height_node);
+    char * app_name = megj_value_name(app_node);
     printf("app name: %s, width: %f, height: %f\n", app_name, width, height);
 
 #endif
 
-    json_cleanup();
+    megj_cleanup();
     
     printf("done!\n");
     

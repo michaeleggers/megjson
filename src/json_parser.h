@@ -1,5 +1,5 @@
-#ifndef JSON_PARSER_H
-#define JSON_PARSER_H
+#ifndef MEGJSON_PARSER_H
+#define MEGJSON_PARSER_H
 
 #include <stdlib.h>
 #include <string.h>
@@ -8,38 +8,38 @@
 
 #define MEGJ_MEMORY_SIZE 1024 * 1024 * 1024
 
-typedef struct JsonToken JsonToken;
-typedef struct JsonNode JsonNode;
+typedef struct MegjToken MegjToken;
+typedef struct MegjNode MegjNode;
 
-typedef struct JsonMemory
+typedef struct MegjMemory
 {
     uint32_t size;
     uint32_t used;
     uint8_t * data;
-} JsonMemory;
+} MegjMemory;
 
-typedef enum JsonType
+typedef enum MegjType
 {
-    JSON_OBJECT,
-    JSON_ARRAY,
-    JSON_NUMBER,
-    JSON_STRING,
-    JSON_TRUE,
-    JSON_FALSE,
-    JSON_NULL,
+    MEGJ_OBJECT,
+    MEGJ_ARRAY,
+    MEGJ_NUMBER,
+    MEGJ_STRING,
+    MEGJ_TRUE,
+    MEGJ_FALSE,
+    MEGJ_NULL,
     
-    JSON_OBJECT_CLOSE,
-    JSON_ARRAY_CLOSE,
-    JSON_COLON,
-    JSON_COMMA,
+    MEGJ_OBJECT_CLOSE,
+    MEGJ_ARRAY_CLOSE,
+    MEGJ_COLON,
+    MEGJ_COMMA,
 
-    JSON_EOF,
-    JSON_UNKNOWN_VALUE
-} JsonType;
+    MEGJ_EOF,
+    MEGJ_UNKNOWN_VALUE
+} MegjType;
 
-struct JsonToken
+struct MegjToken
 {
-    JsonType type;
+    MegjType type;
     
     union
     {
@@ -52,48 +52,47 @@ struct JsonToken
     int size;
 };
 
-struct JsonNode
+struct MegjNode
 {
-    JsonToken token;
-    JsonNode * child;
-    JsonNode * sibling;
+    MegjToken token;
+    MegjNode * child;
+    MegjNode * sibling;
     int count;
     int capacity;
 };
 
-typedef struct JsonDocument
+typedef struct MegjDocument
 {
-    JsonNode * tree;
-    JsonToken * values;
+    MegjNode * tree;
+    MegjToken * values;
     int capacity;
     int size;
-} JsonDocument;
+} MegjDocument;
 
-JsonNode * json_start();
-JsonNode * json_object();
-JsonNode * json_string_value();
-JsonNode * json_value();
-JsonNode * json_array();
-JsonNode * json_string();
-JsonNode * json_number();
-int json_number2(char * out_number, char * buffer);
-JsonNode * json_true();
-JsonNode * json_false();
-JsonNode * json_null();
-void json_print_ast(JsonNode * root);
-void _json_print_ast(JsonNode * node);
+MegjNode * megj_start();
+MegjNode * megj_object();
+MegjNode * megj_string_value();
+MegjNode * megj_value();
+MegjNode * megj_array();
+MegjNode * megj_string();
+MegjNode * megj_number();
+int megj_number2(char * out_number, char * buffer);
+MegjNode * megj_true();
+MegjNode * megj_false();
+MegjNode * megj_null();
+void megj_print_ast(MegjNode * root);
+void _megj_print_ast(MegjNode * node);
 static void unknown_value(char * message);
-void json_cleanup();
-void * json_malloc(uint32_t size);
+void megj_cleanup();
+void * megj_malloc(uint32_t size);
 
 
 
-#ifdef JSON_PARSER_IMPLEMENTATION
+#ifdef MEGJ_PARSER_IMPLEMENTATION
 
-static JsonDocument document;
-static int g_lineno;
+static int _megj_g_lineno;
 
-int json_skipWhitespaces(char * buffer)
+int megj_skipWhitespaces(char * buffer)
 {
     int skipped = 0;
     while (*buffer == ' ' || *buffer == '\t') { 
@@ -103,7 +102,7 @@ int json_skipWhitespaces(char * buffer)
     return skipped;
 }
 
-void print_indent(int indentationCount)
+void _megj_print_indent(int indentationCount)
 {
     for (int i=0; i<indentationCount; ++i)
         printf(" ");
@@ -116,7 +115,7 @@ int skipLine(char * buffer)
     return skipped;
 }
 
-int json_name(char ** out_name, char * buffer)
+int megj_name(char ** out_name, char * buffer)
 {
     char * buffer_start = buffer;
     int length = 0;
@@ -124,13 +123,13 @@ int json_name(char ** out_name, char * buffer)
         buffer++;
         length++;
     }
-    *out_name = (char*)json_malloc( (length+1) * sizeof(char) );
+    *out_name = (char*)megj_malloc( (length+1) * sizeof(char) );
     memcpy( (void*)*out_name, (void*)buffer_start, length );
     (*out_name)[length] = '\0';
     return length;
 }
 
-int json_number2(char * out_number, char * buffer)
+int megj_number2(char * out_number, char * buffer)
 {
     int length = 0;
     while ( (*buffer >= '0' && *buffer <= '9') || (*buffer == '.')
@@ -157,7 +156,7 @@ int skip_whitespaces_and_linebreaks(char ** buffer)
            **buffer == ' ' ||
            **buffer == '\t') { 
         if (**buffer == '\n' || **buffer == '\r') {
-            g_lineno++;
+            _megj_g_lineno++;
         }
         (*buffer)++;
         skipped++;
@@ -211,424 +210,424 @@ int check_value_string(char ** buffer, char * valuestring, int valuestring_lengt
     }
 }
 
-static char * buf;
+static char * _megj_g_buf;
 static int indent;
-static JsonToken g_json_token;
-static JsonMemory g_json_memory;
+static MegjToken _megj_g_token;
+static MegjMemory _megj_g_memory;
 
-JsonToken json_get_token()
+MegjToken megj_get_token()
 {
-    skip_whitespaces_and_linebreaks(&buf);
-    JsonToken token;
-    if ( is_number(buf) ) {
+    skip_whitespaces_and_linebreaks(&_megj_g_buf);
+    MegjToken token;
+    if ( is_number(_megj_g_buf) ) {
 	char asciiNumber[32];
-	buf += json_number2(asciiNumber, buf);
-	token.type = JSON_NUMBER;
+	_megj_g_buf += megj_number2(asciiNumber, _megj_g_buf);
+	token.type = MEGJ_NUMBER;
 	token.data.f_num = atof(asciiNumber);
-	advance_to_next_non_an(&buf);
+	advance_to_next_non_an(&_megj_g_buf);
     }
     else {
-	switch (*buf)
+	switch (*_megj_g_buf)
 	{
 	case '{':
 	{
-	    token.type = JSON_OBJECT;
+	    token.type = MEGJ_OBJECT;
 	    token.size = 0;
-	    buf++;
+	    _megj_g_buf++;
 	} break;
         
 	case '}':
 	{
-	    token.type = JSON_OBJECT_CLOSE;
+	    token.type = MEGJ_OBJECT_CLOSE;
 	    token.size = 0;
-	    buf++;
+	    _megj_g_buf++;
 	} break;
         
 	case '[':
 	{
-	    token.type = JSON_ARRAY;
+	    token.type = MEGJ_ARRAY;
 	    token.size = 0;
-	    buf++;
+	    _megj_g_buf++;
 	} break;
         
 	case ']':
 	{
-	    token.type = JSON_ARRAY_CLOSE;
+	    token.type = MEGJ_ARRAY_CLOSE;
 	    token.size = 0;
-	    buf++;
+	    _megj_g_buf++;
 	} break;
         
 	case '"':
 	{
-	    buf++; // step over opening ' " '
-	    token.type = JSON_STRING;
+	    _megj_g_buf++; // step over opening ' " '
+	    token.type = MEGJ_STRING;
 	    token.size = 0;
-	    buf += json_name( &(token.data.name), buf );
-	    buf++; // step over closing ' " '
+	    _megj_g_buf += megj_name( &(token.data.name), _megj_g_buf );
+	    _megj_g_buf++; // step over closing ' " '
 	} break;
         
 	case 'f':
 	{
-	    if (check_value_string(&buf, "false", 5)) {		
-		token.type = JSON_FALSE;
+	    if (check_value_string(&_megj_g_buf, "false", 5)) {		
+		token.type = MEGJ_FALSE;
 		token.size = 0;
 	    }
 	    else {
-		token.type = JSON_UNKNOWN_VALUE;
+		token.type = MEGJ_UNKNOWN_VALUE;
 		token.size = 0;
 	    }
-	    advance_to_next_non_an(&buf);
+	    advance_to_next_non_an(&_megj_g_buf);
 	} break;
         
 	case 't':
 	{
-	    if (check_value_string(&buf, "true", 4)) {
-		token.type = JSON_TRUE;
+	    if (check_value_string(&_megj_g_buf, "true", 4)) {
+		token.type = MEGJ_TRUE;
 		token.size = 0;
 	    }
 	    else {
-		token.type = JSON_UNKNOWN_VALUE;
+		token.type = MEGJ_UNKNOWN_VALUE;
 		token.size = 0;
 	    }
-	    advance_to_next_non_an(&buf);
+	    advance_to_next_non_an(&_megj_g_buf);
 	} break;
 
 	case 'n':
 	{
-	    if (check_value_string(&buf, "null", 4)) {
-		token.type = JSON_NULL;
+	    if (check_value_string(&_megj_g_buf, "null", 4)) {
+		token.type = MEGJ_NULL;
 		token.size = 0;
 	    }
 	    else {
-		token.type = JSON_UNKNOWN_VALUE;
+		token.type = MEGJ_UNKNOWN_VALUE;
 		token.size = 0;
 	    }
-	    advance_to_next_non_an(&buf);
+	    advance_to_next_non_an(&_megj_g_buf);
 	} break;
         
 	case ',':
 	{
-	    token.type = JSON_COMMA;
+	    token.type = MEGJ_COMMA;
 	    token.size = 0;
-	    buf++; // step over comma
-	    advance_to_next_non_an(&buf);
+	    _megj_g_buf++; // step over comma
+	    advance_to_next_non_an(&_megj_g_buf);
 	} break;
         
 	case ':':
 	{
-	    token.type = JSON_COLON;
+	    token.type = MEGJ_COLON;
 	    token.size = 0;
-	    advance_to_next_whitespace(&buf);
+	    advance_to_next_whitespace(&_megj_g_buf);
 	} break;
 
 	case '\0':
 	{
-	    token.type = JSON_EOF;
+	    token.type = MEGJ_EOF;
 	    token.size = 0;
 	} break;
 	
 	default:	   
 	{
-	    token.type = JSON_UNKNOWN_VALUE;
+	    token.type = MEGJ_UNKNOWN_VALUE;
 	    token.size = 0;
-	    check_value_string(&buf, "", 1);
+	    check_value_string(&_megj_g_buf, "", 1);
 	}
 	}
     }
-    skip_whitespaces_and_linebreaks(&buf);
+    skip_whitespaces_and_linebreaks(&_megj_g_buf);
     return token;
 }
 
-void print_token2(JsonToken * token)
+void _megj_print_token2(MegjToken * token)
 {
     switch (token->type)
     {
-    case JSON_OBJECT:
+    case MEGJ_OBJECT:
     {
 	printf("OBJECT\n");
     } break;
         
-    case JSON_OBJECT_CLOSE:
+    case MEGJ_OBJECT_CLOSE:
     {
 	printf("OBJECT-CLOSE\n");
     } break;
         
-    case JSON_ARRAY:
+    case MEGJ_ARRAY:
     {
 	printf("ARRAY\n");
     } break;
         
-    case JSON_ARRAY_CLOSE:
+    case MEGJ_ARRAY_CLOSE:
     {
 	printf("ARRAY-CLOSE\n");
     } break;
         
-    case JSON_STRING:
+    case MEGJ_STRING:
     {
 	printf("STRING: %s\n", token->data.name);
     } break;
         
-    case JSON_NUMBER:
+    case MEGJ_NUMBER:
     {
 	printf("NUMBER: %f\n", token->data.f_num);
     } break;
         
-    case JSON_TRUE:
+    case MEGJ_TRUE:
     {
 	printf("TRUE\n");
     } break;
         
-    case JSON_FALSE:
+    case MEGJ_FALSE:
     {
 	printf("FALSE\n");
     } break;
 
-    case JSON_NULL:
+    case MEGJ_NULL:
     {
 	printf("NULL\n");	      
     } break;
         
-    case JSON_COMMA:
+    case MEGJ_COMMA:
     {
 	printf(",\n");
     } break;
         
-    case JSON_COLON:
+    case MEGJ_COLON:
     {
 	printf(":\n");
     } break;
 
-    case JSON_EOF:
+    case MEGJ_EOF:
     {
 	printf("EOF\n");
     } break;
 
-    case JSON_UNKNOWN_VALUE:
+    case MEGJ_UNKNOWN_VALUE:
     {
 	printf("UNKNOWN VALUE!\n");
     } break;
     }
 }
 
-void print_token(JsonToken * token)
+void print_token(MegjToken * token)
 {
     switch (token->type)
     {
-    case JSON_OBJECT:
+    case MEGJ_OBJECT:
     {
-	print_indent(indent);
+	_megj_print_indent(indent);
 	printf("OBJECT\n");
 	indent += 2;
     } break;
         
-    case JSON_OBJECT_CLOSE:
+    case MEGJ_OBJECT_CLOSE:
     {
 	indent -= 2;
-	print_indent(indent);
+	_megj_print_indent(indent);
 	printf("OBJECT-CLOSE\n");
     } break;
         
-    case JSON_ARRAY:
+    case MEGJ_ARRAY:
     {
-	print_indent(indent);
+	_megj_print_indent(indent);
 	printf("ARRAY\n");
 	indent += 2;
     } break;
         
-    case JSON_ARRAY_CLOSE:
+    case MEGJ_ARRAY_CLOSE:
     {
 	indent -= 2;
-	print_indent(indent);
+	_megj_print_indent(indent);
 	printf("ARRAY-CLOSE\n");
     } break;
         
-    case JSON_STRING:
+    case MEGJ_STRING:
     {
-	print_indent(indent);
+	_megj_print_indent(indent);
 	printf("STRING: %s\n", token->data.name);
     } break;
         
-    case JSON_NUMBER:
+    case MEGJ_NUMBER:
     {
-	print_indent(indent);
+	_megj_print_indent(indent);
 	printf("NUMBER: %f\n", token->data.f_num);
     } break;
         
-    case JSON_TRUE:
+    case MEGJ_TRUE:
     {
-	print_indent(indent);
+	_megj_print_indent(indent);
 	printf("TRUE\n");
     } break;
         
-    case JSON_FALSE:
+    case MEGJ_FALSE:
     {
-	print_indent(indent);
+	_megj_print_indent(indent);
 	printf("FALSE\n");
     } break;
 
-    case JSON_NULL:
+    case MEGJ_NULL:
     {
-	print_indent(indent);
+	_megj_print_indent(indent);
 	printf("NULL\n");
     } break;
         
-    case JSON_COMMA:
+    case MEGJ_COMMA:
     {
-	print_indent(indent);
+	_megj_print_indent(indent);
 	printf(",\n");
     } break;
         
-    case JSON_COLON:
+    case MEGJ_COLON:
     {
-	print_indent(indent);
+	_megj_print_indent(indent);
 	printf(":\n");
     } break;
 
-    case JSON_EOF:
+    case MEGJ_EOF:
     {
 	printf("EOF\n");
     } break;
 
-    case JSON_UNKNOWN_VALUE:
+    case MEGJ_UNKNOWN_VALUE:
     {
-	print_indent(indent);
+	_megj_print_indent(indent);
 	printf("UNKNOWN VALUE!\n");
     } break;
     }
 }
 
-void * json_malloc(uint32_t size)
+void * megj_malloc(uint32_t size)
 {
-    assert( ((g_json_memory.used + size) <= g_json_memory.size) && "Out of memory!" );
-    void * addr = (void*)(g_json_memory.data + g_json_memory.used);
-    g_json_memory.used += size;
+    assert( ((_megj_g_memory.used + size) <= _megj_g_memory.size) && "Out of memory!" );
+    void * addr = (void*)(_megj_g_memory.data + _megj_g_memory.used);
+    _megj_g_memory.used += size;
     return addr;
 }
 
-void json_cleanup()
+void megj_cleanup()
 {
-    free((void*)g_json_memory.data);
-    g_json_memory.used = 0;    
+    free((void*)_megj_g_memory.data);
+    _megj_g_memory.used = 0;    
 }
 
-JsonNode * new_json_node()
+MegjNode * new_megj_node()
 {
-    JsonNode * new_node = (JsonNode *)json_malloc(sizeof(JsonNode));
+    MegjNode * new_node = (MegjNode *)megj_malloc(sizeof(MegjNode));
     new_node->child = 0;
     new_node->sibling = 0;
-    new_node->token = (JsonToken){0};
+    new_node->token = (MegjToken){0};
     return new_node;
 }
 
 static void unknown_value(char * message)
 {
-    fprintf(stderr, "\n>>> Unknown JSON-value at line %d: %s\n", g_lineno, message);
+    fprintf(stderr, "\n>>> Unknown JSON-value at line %d: %s\n", _megj_g_lineno, message);
 }
 
 static void syntax_error(char * message)
 {
-    fprintf(stderr, "\n>>> Syntax error at line %d %s", g_lineno, message);
+    fprintf(stderr, "\n>>> Syntax error at line %d %s", _megj_g_lineno, message);
 }
 
-static void match(JsonType expected_token_type)
+static void match(MegjType expected_token_type)
 {
-    if (g_json_token.type == expected_token_type) {
-        g_json_token = json_get_token();
+    if (_megj_g_token.type == expected_token_type) {
+        _megj_g_token = megj_get_token();
     }
     else {
         syntax_error("unexpected token -> ");
-        print_token(&g_json_token);
+        print_token(&_megj_g_token);
 	abort();
     }
 }
 
-JsonNode * json_object()
+MegjNode * megj_object()
 {
-    JsonNode * t = new_json_node();
-    t->token = g_json_token;
-    match(JSON_OBJECT);
-//    g_json_token = json_get_token();
-    /* After object starts, next value-type must be either JSON_STRING or JSON_NULL */
-    if (g_json_token.type == JSON_STRING) {
-	t->child = json_string_value();
+    MegjNode * t = new_megj_node();
+    t->token = _megj_g_token;
+    match(MEGJ_OBJECT);
+//    _megj_g_token = megj_get_token();
+    /* After object starts, next value-type must be either MEGJ_STRING or MEGJ_NULL */
+    if (_megj_g_token.type == MEGJ_STRING) {
+	t->child = megj_string_value();
     }
-    else { // g_json_object.type == JSON_OBJECT_CLOSE !
-	// t->child = json_null(); /* TODO: should this be undefined or get the json-value 'null'? */
+    else { // g_megj_object.type == MEGJ_OBJECT_CLOSE !
+	// t->child = megj_null(); /* TODO: should this be undefined or get the json-value 'null'? */
 	t->child = 0;	
     }
-    JsonNode * p = t->child;
-    while (g_json_token.type == JSON_COMMA) {
-        match(JSON_COMMA);
-        JsonNode * q = json_string_value();
+    MegjNode * p = t->child;
+    while (_megj_g_token.type == MEGJ_COMMA) {
+        match(MEGJ_COMMA);
+        MegjNode * q = megj_string_value();
         p->sibling = q;
         p = q;
     }
-    match(JSON_OBJECT_CLOSE);
+    match(MEGJ_OBJECT_CLOSE);
     return t;
 }
 
-JsonNode * json_string_value()
+MegjNode * megj_string_value()
 {
-    JsonNode * t = new_json_node();
-    t->token = g_json_token;
-    match(JSON_STRING);
-    match(JSON_COLON);
-    t->child = json_value();
+    MegjNode * t = new_megj_node();
+    t->token = _megj_g_token;
+    match(MEGJ_STRING);
+    match(MEGJ_COLON);
+    t->child = megj_value();
     return t;
 }
 
-JsonNode * json_value()
+MegjNode * megj_value()
 {
-    JsonNode * t = 0;
-    switch(g_json_token.type)
+    MegjNode * t = 0;
+    switch(_megj_g_token.type)
     {
-        case JSON_OBJECT:
+        case MEGJ_OBJECT:
         {
-            t = json_object();
+            t = megj_object();
         }
         break;
         
-        case JSON_ARRAY:
+        case MEGJ_ARRAY:
         {
-            t = json_array();
+            t = megj_array();
         }
         break;
         
-        case JSON_STRING:
+        case MEGJ_STRING:
         {
-            t = json_string();
+            t = megj_string();
         }
         break;
         
-        case JSON_NUMBER:
+        case MEGJ_NUMBER:
         {
-            t = json_number();
+            t = megj_number();
         }
         break;
         
-        case JSON_TRUE:
+        case MEGJ_TRUE:
         {
-            t = json_true();
+            t = megj_true();
         }
         break;
         
-        case JSON_FALSE:
+        case MEGJ_FALSE:
         {
-            t = json_false();
+            t = megj_false();
         }
         break;
         
-        case JSON_NULL:
+        case MEGJ_NULL:
         {
-	    t = json_null();
+	    t = megj_null();
         }
         break;
         
         default:
         {
             syntax_error("unexpected token -> ");
-            print_token(&g_json_token);
-//            g_json_token = json_get_token();
+            print_token(&_megj_g_token);
+//            _megj_g_token = megj_get_token();
 	    abort();
         }
         break;
@@ -636,76 +635,76 @@ JsonNode * json_value()
     return t;
 }
 
-JsonNode * json_array()
+MegjNode * megj_array()
 {
-    JsonNode * t = new_json_node();
-    t->token = g_json_token;
-    match(JSON_ARRAY);
-//    g_json_token = json_get_token();
-    t->child = json_value();
-    JsonNode * p = t->child;
-    while (g_json_token.type == JSON_COMMA) {
-        match(JSON_COMMA);
-        JsonNode * q = json_value();
+    MegjNode * t = new_megj_node();
+    t->token = _megj_g_token;
+    match(MEGJ_ARRAY);
+//    _megj_g_token = megj_get_token();
+    t->child = megj_value();
+    MegjNode * p = t->child;
+    while (_megj_g_token.type == MEGJ_COMMA) {
+        match(MEGJ_COMMA);
+        MegjNode * q = megj_value();
         p->sibling = q;
         p = q;
     }
-    match(JSON_ARRAY_CLOSE);
+    match(MEGJ_ARRAY_CLOSE);
     return t;
 }
 
-JsonNode * json_string()
+MegjNode * megj_string()
 {
-    JsonNode * t = new_json_node();
-    t->token = g_json_token;
-    match(JSON_STRING);
+    MegjNode * t = new_megj_node();
+    t->token = _megj_g_token;
+    match(MEGJ_STRING);
     return t;
 }
 
-JsonNode * json_number()
+MegjNode * megj_number()
 {
-    JsonNode * t = new_json_node();
-    t->token = g_json_token;
-    match(JSON_NUMBER);
+    MegjNode * t = new_megj_node();
+    t->token = _megj_g_token;
+    match(MEGJ_NUMBER);
     return t;
 }
 
-JsonNode * json_true()
+MegjNode * megj_true()
 {
-    JsonNode * t = new_json_node();
-    t->token = g_json_token;
-    match(JSON_TRUE);
+    MegjNode * t = new_megj_node();
+    t->token = _megj_g_token;
+    match(MEGJ_TRUE);
     return t;
 }
 
-JsonNode * json_false()
+MegjNode * megj_false()
 {
-    JsonNode * t = new_json_node();
-    t->token = g_json_token;
-    match(JSON_FALSE);
+    MegjNode * t = new_megj_node();
+    t->token = _megj_g_token;
+    match(MEGJ_FALSE);
     return t;
 }
 
-JsonNode * json_null()
+MegjNode * megj_null()
 {
-    JsonNode * t = new_json_node();
-    t->token = g_json_token;
-    match(JSON_NULL);
+    MegjNode * t = new_megj_node();
+    t->token = _megj_g_token;
+    match(MEGJ_NULL);
     return t;
 }
 
-JsonNode * json_start()
+MegjNode * megj_start()
 {
-    JsonNode * t = 0;
-    switch (*buf) {
+    MegjNode * t = 0;
+    switch (*_megj_g_buf) {
     case '{': {
-	g_json_token = json_get_token();
-	t = json_object();
+	_megj_g_token = megj_get_token();
+	t = megj_object();
     } break;
 
     case '[': {
-	g_json_token = json_get_token();
-	t = json_array();
+	_megj_g_token = megj_get_token();
+	t = megj_array();
     } break;
     default: {
 	assert("json document must start with object or array!\n");
@@ -715,7 +714,7 @@ JsonNode * json_start()
     return t;
 }
 
-JsonDocument json_parse(char * buffer)
+MegjDocument megj_parse(char * buffer)
 {
     // TODO(Michael): assert buffer
     
@@ -724,63 +723,63 @@ JsonDocument json_parse(char * buffer)
     char * bufferPos = buffer;
     while (*bufferPos != '\0')
     {
-        int skipped = json_skipWhitespaces(bufferPos);
+        int skipped = megj_skipWhitespaces(bufferPos);
         bufferPos += skipped;
         printf("%c", *bufferPos);
         bufferPos++;
     }
     
     // print tokens to console for debugging
-    buf = buffer;
-    while (*buf != '\0') {
-        g_json_token = json_get_token();
-        print_token(&g_json_token);
+    _megj_g_buf = buffer;
+    while (*_megj_g_buf != '\0') {
+        _megj_g_token = megj_get_token();
+        print_token(&_megj_g_token);
     }
 #endif
 
     /* Initialize Memory */
     {
-	g_json_memory.data = (uint8_t*)malloc(MEGJ_MEMORY_SIZE);
-	memset((uint8_t*)g_json_memory.data, 0, MEGJ_MEMORY_SIZE);
-	g_json_memory.size = MEGJ_MEMORY_SIZE;
-	g_json_memory.used = 0;
+	_megj_g_memory.data = (uint8_t*)malloc(MEGJ_MEMORY_SIZE);
+	memset((uint8_t*)_megj_g_memory.data, 0, MEGJ_MEMORY_SIZE);
+	_megj_g_memory.size = MEGJ_MEMORY_SIZE;
+	_megj_g_memory.used = 0;
     }
     
-    JsonDocument document;
-    buf = buffer;
-    JsonNode * t = 0;
-//    g_json_token = json_get_token();
-    skip_whitespaces_and_linebreaks(&buf);
-    t = json_start();
-    //_json_print_ast(t);
+    MegjDocument document;
+    _megj_g_buf = buffer;
+    MegjNode * t = 0;
+//    _megj_g_token = megj_get_token();
+    skip_whitespaces_and_linebreaks(&_megj_g_buf);
+    t = megj_start();
+    //_megj_print_ast(t);
     document.tree = t;
     return document;
 }
 
-static int indentation;
-void _json_print_ast(JsonNode * tree)
+static int _megj_g_indentation;
+void _megj_print_ast(MegjNode * tree)
 {
-    indentation += 2;
+    _megj_g_indentation += 2;
     while (tree) {
-        print_indent(indentation);
-        JsonToken token = tree->token;
-        print_token2(&token);
+        _megj_print_indent(_megj_g_indentation);
+        MegjToken token = tree->token;
+        _megj_print_token2(&token);
         if (tree->child) {
-            _json_print_ast(tree->child);
+            _megj_print_ast(tree->child);
         }
         tree = tree->sibling;
     }
-    indentation -= 2;
+    _megj_g_indentation -= 2;
 }
 
-JsonNode * json_get_value_by_name(JsonNode * node, char * name)
+MegjNode * megj_get_value_by_name(MegjNode * node, char * name)
 {
-    JsonNode * t = 0;
+    MegjNode * t = 0;
     if ( !strcmp(node->child->token.data.name, name) ) {
         t = node->child->child;
     }
     else {
-        JsonNode * sibling = node->child->sibling;
+        MegjNode * sibling = node->child->sibling;
         while (sibling) {
             if ( !strcmp(sibling->token.data.name, name) ) {
                 t = sibling->child;
@@ -792,19 +791,19 @@ JsonNode * json_get_value_by_name(JsonNode * node, char * name)
     return t;
 }
 
-JsonNode * json_get_child(JsonNode * node)
+MegjNode * megj_get_child(MegjNode * node)
 {
     return node->child;
 }
 
-JsonNode * json_get_next_value(JsonNode * node)
+MegjNode * megj_get_next_value(MegjNode * node)
 {
     return node->sibling;
 }
 
-float json_value_float(JsonNode * node)
+float megj_value_float(MegjNode * node)
 {
-    if (node->token.type == JSON_NUMBER) {
+    if (node->token.type == MEGJ_NUMBER) {
         return node->token.data.f_num;
     }
     else {
@@ -813,20 +812,20 @@ float json_value_float(JsonNode * node)
     return 0.f;
 }
 
-int json_value_bool(JsonNode * node)
+int megj_value_bool(MegjNode * node)
 {
-    if (node->token.type == JSON_TRUE) {
+    if (node->token.type == MEGJ_TRUE) {
         return 1;
     }
-    else if (node->token.type == JSON_FALSE) {
+    else if (node->token.type == MEGJ_FALSE) {
         return 0;
     }
     return -1; // TODO(Michael): what to return in error-case?
 }
 
-char * json_value_name(JsonNode * node)
+char * megj_value_name(MegjNode * node)
 {
-    if (node->token.type == JSON_STRING) {
+    if (node->token.type == MEGJ_STRING) {
         return node->token.data.name;
     }
     else {
@@ -834,21 +833,21 @@ char * json_value_name(JsonNode * node)
     }
 }
 
-void json_print_ast(JsonNode * root)
+void megj_print_ast(MegjNode * root)
 {
     printf("\n\n>>> AST <<<\n\n");
-    int indentation = 0;
-    JsonNode * current_node = root;
+    int _megj_g_indentation = 0;
+    MegjNode * current_node = root;
     while (current_node) {
-        JsonToken token = current_node->token;
-        if ( (token.type == JSON_OBJECT) || (token.type == JSON_ARRAY) ) {
-            indentation += 2;
+        MegjToken token = current_node->token;
+        if ( (token.type == MEGJ_OBJECT) || (token.type == MEGJ_ARRAY) ) {
+            _megj_g_indentation += 2;
         }
-        else if ( (token.type == JSON_OBJECT_CLOSE) || (token.type == JSON_ARRAY_CLOSE) ) {
-            indentation -= 2;
+        else if ( (token.type == MEGJ_OBJECT_CLOSE) || (token.type == MEGJ_ARRAY_CLOSE) ) {
+            _megj_g_indentation -= 2;
         }
-        print_indent(indentation);
-        print_token2(&token);
+        _megj_print_indent(_megj_g_indentation);
+        _megj_print_token2(&token);
         current_node = current_node->child;
     }
 }
