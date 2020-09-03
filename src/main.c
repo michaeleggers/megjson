@@ -25,11 +25,11 @@ MyFile read_file(char * filepath) {
 int main(int argc, char ** argv)
 {
 
-    MyFile json_file = read_file("../testfiles/array_with_empty_object.json");
+    MyFile json_file = read_file("../testfiles/citylots.json");
 //    printf("%s\n", json_file.data);
 
     JsonDocument doc = json_parse(json_file.data);
-    _json_print_ast(doc.tree);
+//    _json_print_ast(doc.tree);
 #if 0
     JsonNode * frames = json_get_value_by_name(doc.tree, "frames");
     JsonNode * meta = json_get_value_by_name(doc.tree, "meta");
@@ -52,6 +52,8 @@ int main(int argc, char ** argv)
 #endif
 
     json_cleanup();
-
+    
+    printf("done!\n");
+    
     return 0;
 }

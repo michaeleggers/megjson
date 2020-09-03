@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <stdint.h>
 
-#define MEGJ_MEMORY_SIZE 500 * 1024 * 1024
+#define MEGJ_MEMORY_SIZE 1024 * 1024 * 1024
 
 typedef struct JsonToken JsonToken;
 typedef struct JsonNode JsonNode;
@@ -310,7 +310,8 @@ JsonToken json_get_token()
 	{
 	    token.type = JSON_COMMA;
 	    token.size = 0;
-	    advance_to_next_whitespace(&buf);
+	    buf++; // step over comma
+	    advance_to_next_non_an(&buf);
 	} break;
         
 	case ':':

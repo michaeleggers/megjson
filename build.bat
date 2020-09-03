@@ -19,7 +19,7 @@ REM gcc %flags_release% ..\src\main.c -o main_gcc_release
 
 REM clang-cl %clang_flags_debug%  ..\src\main.c -o main_clang_dbg
 clang-cl %clang_flags_debug_easy% ..\src\main.c -o main_clang_dbg_easy.exe
-REM clang-cl %clang_flags_debug_release% ..\src\main.c -o main_clang_release.exe
+clang-cl %clang_flags_debug_release% ..\src\main.c -o main_clang_release.exe
 
 popd
 popd
