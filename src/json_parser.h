@@ -82,7 +82,7 @@ MegjNode * megj_false();
 MegjNode * megj_null();
 void megj_print_ast(MegjNode * root);
 void _megj_print_ast(MegjNode * node);
-static void unknown_value(char * message);
+static void _megj_unknown_value(char * message);
 void megj_cleanup();
 void * megj_malloc(uint32_t size);
 
@@ -205,7 +205,7 @@ int check_value_string(char ** buffer, char * valuestring, int valuestring_lengt
 	return 1;
     }
     else {
-	unknown_value(tmp);
+	_megj_unknown_value(tmp);
 	return 0;
     }
 }
@@ -519,12 +519,12 @@ MegjNode * new_megj_node()
     return new_node;
 }
 
-static void unknown_value(char * message)
+static void _megj_unknown_value(char * message)
 {
     fprintf(stderr, "\n>>> Unknown JSON-value at line %d: %s\n", _megj_g_lineno, message);
 }
 
-static void syntax_error(char * message)
+static void _megj_syntax_error(char * message)
 {
     fprintf(stderr, "\n>>> Syntax error at line %d %s", _megj_g_lineno, message);
 }
@@ -535,7 +535,7 @@ static void match(MegjType expected_token_type)
         _megj_g_token = megj_get_token();
     }
     else {
-        syntax_error("unexpected token -> ");
+        _megj_syntax_error("unexpected token -> ");
         print_token(&_megj_g_token);
 	abort();
     }
@@ -625,7 +625,7 @@ MegjNode * megj_value()
         
         default:
         {
-            syntax_error("unexpected token -> ");
+            _megj_syntax_error("unexpected token -> ");
             print_token(&_megj_g_token);
 //            _megj_g_token = megj_get_token();
 	    abort();
